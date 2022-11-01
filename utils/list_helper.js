@@ -1,26 +1,58 @@
-const { countBy, groupBy, mapValues, sortBy, last } = require('lodash')
+const { groupBy, mapValues, sortBy, last } = require("lodash")
+
+function dummy() {
+  return 1
+}
 
 function countLikes(blogs) {
-    return blogs.map((blog) => blog['likes']).reduce((a, b) => a + b)
+  return blogs.map((blog) => blog["likes"]).reduce((a, b) => a + b)
+}
+
+function count(blogs) {
+  return blogs.length
 }
 
 function highestValueForProperty(objectsArray, property) {
-    const sorted = sortBy(objectsArray, (obj) => obj[property])
-    return last(sorted)
+  const sorted = sortBy(objectsArray, (obj) => obj[property])
+  return last(sorted)
 }
 
+function statistics(blogs, statisticName, statisticFunction) {
+  const byAuthor = groupBy(blogs, (blog) => blog["author"])
+  const statisticMap = mapValues(byAuthor, statisticFunction)
+  const statisticArrayOfObjects = Object.entries(statisticMap).map(
+    ([key, value]) => {
+      let obj = {}
+      obj["author"] = key
+      obj[statisticName] = value
+      return obj
+    }
+  )
+  return statisticArrayOfObjects
+}
 
-const totalLikes = (blogs) => {
-    return countLikes(blogs)
-};
+function totalLikes(blogs) {
+  return countLikes(blogs)
+}
 
 const favouriteBlog = (blogs) => {
-    return highestValueForProperty(blogs, 'likes')
+  return highestValueForProperty(blogs, "likes")
 }
 
+function authorWithMostBlogs(blogs) {
+  const statisticsArray = statistics(blogs, "blogs", count)
+  return highestValueForProperty(statisticsArray, ["blogs"])
+}
 
+function authorWithMostLikes(blogs) {
+  const statisticsArray = statistics(blogs, "likes", countLikes)
+  return highestValueForProperty(statisticsArray, ["likes"])
+}
 
 module.exports = {
-    totalLikes,
-    favouriteBlog,
-};
+  dummy,
+  totalLikes,
+  favouriteBlog,
+  authorWithMostBlogs,
+  authorWithMostLikes,
+}
