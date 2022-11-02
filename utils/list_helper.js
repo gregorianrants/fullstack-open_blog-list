@@ -32,19 +32,33 @@ function statistics(blogs, statisticName, statisticFunction) {
 }
 
 function totalLikes(blogs) {
+  if (blogs.length === 0) return null
   return countLikes(blogs)
 }
 
 const favouriteBlog = (blogs) => {
+  if (blogs.length === 0) return null
   return highestValueForProperty(blogs, "likes")
 }
 
 function authorWithMostBlogs(blogs) {
+  if (blogs.length === 0) {
+    return {
+      author: null,
+      blogs: null,
+    }
+  }
   const statisticsArray = statistics(blogs, "blogs", count)
   return highestValueForProperty(statisticsArray, ["blogs"])
 }
 
 function authorWithMostLikes(blogs) {
+  if (blogs.length === 0) {
+    return {
+      author: null,
+      likes: null,
+    }
+  }
   const statisticsArray = statistics(blogs, "likes", countLikes)
   return highestValueForProperty(statisticsArray, ["likes"])
 }
