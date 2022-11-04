@@ -9,6 +9,7 @@ beforeEach(async () => {
 })
 
 test('fetch blogs', async () => {
+  console.log()
   const blogs = await api.get('/api/blogs').expect(200)
 
   expect(blogs.body.length).toBe(helpers.blogs.length)
