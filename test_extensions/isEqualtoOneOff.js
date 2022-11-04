@@ -1,4 +1,4 @@
-const { isEqual } = require("lodash")
+const { isEqual } = require('lodash')
 
 function isEqualToOneOff(inputObj, arrOfObjects) {
   for (const obj of arrOfObjects) {
@@ -11,12 +11,12 @@ const extension = (obj, arrayOfObjects) => {
   if (!isEqualToOneOff(obj, arrayOfObjects)) {
     return {
       pass: false,
-      message: () => "is not equal to any of the objects in the array",
+      message: () => 'is not equal to any of the objects in the array',
     }
   }
   return {
     pass: true,
-    message: () => `obj matches one on the the objects in the array`,
+    message: () => 'obj matches one on the the objects in the array',
   }
 }
 

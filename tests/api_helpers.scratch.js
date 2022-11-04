@@ -1,10 +1,6 @@
-require("../db.js")
-const {
-  seedDB,
-  getBlogs,
-  removePathsAddedByMongoose,
-} = require("./api_helpers")
-const mongoose = require("mongoose")
+require('../db.js')
+const { getBlogs, removePathsAddedByMongoose } = require('./api_helpers')
+const mongoose = require('mongoose')
 
 async function main() {
   //await seedDB()
@@ -13,7 +9,5 @@ async function main() {
   console.log(blogs)
   await mongoose.connection.close()
 }
-
-
 
 main().catch((err) => console.error(err))
