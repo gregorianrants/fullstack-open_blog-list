@@ -64,7 +64,6 @@ test('title and url are required', async () => {
   const noUrl = {
     title: 'Type wars',
     author: 'Robert C. Martin',
-    url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
   }
 
   await api.post('/api/blogs').send(noUrl).expect(400)
