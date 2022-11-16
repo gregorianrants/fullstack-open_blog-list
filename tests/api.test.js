@@ -1,6 +1,7 @@
 const helpers = require('./api_helpers.js')
 const superTest = require('supertest')
 const app = require('../app.js')
+const { withoutId } = require('../library/library')
 
 const api = superTest(app)
 
@@ -45,7 +46,7 @@ describe('when creating a new blog post', () => {
       .expect('Content-Type', /application\/json/)
 
     const blogs = await helpers.getBlogs()
-    const blogsWithOutId = blogs.map(helpers.withoutId)
+    const blogsWithOutId = blogs.map(withoutId)
 
     expect(blogsWithOutId).toContainEqual(helpers.blog)
   }, 10000)

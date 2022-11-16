@@ -28,6 +28,7 @@ const blog = {
   likes: 2,
 }
 
+
 async function seedDB() {
   await Blog.deleteMany()
   const Blogs = blogs.map((blog) => new Blog(blog))
@@ -50,11 +51,7 @@ async function getBlogsLength() {
   return blogs.length
 }
 
-function withoutId(blog) {
-  let result = { ...blog }
-  delete result.id
-  return result
-}
+
 
 async function getBlogWithId(id) {
   const blog = await Blog.findById(id)
@@ -66,7 +63,6 @@ module.exports = {
   blogs,
   seedDB,
   getBlogs,
-  withoutId,
   blogWithSameIdExists,
   getBlogsLength,
   getBlogWithId,

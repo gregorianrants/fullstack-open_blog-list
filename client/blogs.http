@@ -1,0 +1,15 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+
+  {
+  "title": "the mearning of life",
+  "author": "monty python",
+  "url": "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
+  "likes": "2"
+}
+
+###get blogs
+GET http://localhost:3003/api/blogs
+
+
