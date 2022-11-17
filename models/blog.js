@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const User = require('../models/user.js')
 
 const blogSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -16,6 +17,26 @@ blogSchema.set('toJSON', {
   },
 })
 
+async function listBlogs() {
+  const blogs = await Blog.find({}).populate('user')
+  return blogs
+}
+
+async function create({ blogData, userDoc }) {
+  const userId = userDoc._id
+  const blogDoc = new Blog({
+    ...blogData,
+    user: userId,
+  })
+
+  const savedBlog = await blogDoc.save()
+  await User.findByIdAndUpdate(userId, {
+    blogs: [...userDoc.blogs, savedBlog._id],
+  })
+
+  return savedBlog
+}
+
 const Blog = mongoose.model('Blog', blogSchema)
 
-module.exports = Blog
+module.exports = { Model: Blog, listBlogs, create }

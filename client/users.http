@@ -1,10 +1,11 @@
+
 POST http://localhost:3003/api/users
 Content-Type: application/json
 
 {
-  "username": "bataman",
-  "name": "bruce wain",
-  "password": "sa5555"
+  "username": "zeusd",
+  "name": "jimmy",
+  "password": "olympus"
 }
 
 ###get users

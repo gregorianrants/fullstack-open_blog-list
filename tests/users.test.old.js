@@ -3,15 +3,13 @@ const {
   getUsers,
   usersSeedData,
   getRandomUsername,
-} = require('./users_helpers')
+} = require('./usersHelpers')
 
 const superTest = require('supertest')
 const app = require('../app.js')
 const { withoutId, removePath } = require('../library/library')
 
 const api = superTest(app)
-
-
 
 describe('when there are already some users in the database', () => {
   beforeEach(async () => {

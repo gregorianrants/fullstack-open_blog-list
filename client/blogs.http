@@ -1,9 +1,49 @@
+###create blog with valid header
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InpldXMiLCJpZCI6IjYzNzU1MzkyZjlmM2NkZmQ1NDRmYWNiMyIsImlhdCI6MTY2ODcxOTA4NX0.w_lxavwOnKYnUOsTWbGZYn3ta_cBv2tNCiOIqiTvi04
+
+
+  {
+  "title": "the mearnzxczxczxczxcing of life",
+  "author": "monty python",
+  "url": "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
+  "likes": "2"
+}
+
+###create blog with invalid header
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InpldXMiLCJpZCI6IjYzNzU1MzkyZjlmM2NkZmQ1NDRmYWNiMyIsImlhdCI6MTY2ODYzMzUxM30.dET4dhFJhy2w0OWBiVn3s055ssdIkwNOFrzaOhlhais
+
+
+  {
+  "title": "the mearnzxczxczxczxcing of life",
+  "author": "monty python",
+  "url": "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
+  "likes": "2"
+}
+
+###create blog with no auth header
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 
   {
-  "title": "the mearning of life",
+  "title": "the mearnzxczxczxczxcing of life",
+  "author": "monty python",
+  "url": "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
+  "likes": "2"
+}
+
+###create blog with wrong auth scheme
+
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InpldXMiLCJpZCI6IjYzNzU1MzkyZjlmM2NkZmQ1NDRmYWNiMyIsImlhdCI6MTY2ODYzMzUxM30.dET4dhFJhy2w0OWBiVn3s055ssdIkwNOFrzaOhlhais
+
+  {
+  "title": "the mearnzxczxczxczxcing of life",
   "author": "monty python",
   "url": "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
   "likes": "2"
@@ -11,5 +51,10 @@ Content-Type: application/json
 
 ###get blogs
 GET http://localhost:3003/api/blogs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InpldXMiLCJpZCI6IjYzNzU1MzkyZjlmM2NkZmQ1NDRmYWNiMyIsImlhdCI6MTY2ODYzMzUxM30.dET4dhFJhy2w0OWBiVn3s055ssdIkwNOFrzaOhlhais
+
+###delete blog
+DELETE http://localhost:3003/api/blogs/637553cbf9f3cdfd544facb8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InpldXMiLCJpZCI6IjYzNzU1MzkyZjlmM2NkZmQ1NDRmYWNiMyIsImlhdCI6MTY2ODYzMzUxM30.dET4dhFJhy2w0OWBiVn3s055ssdIkwNOFrzaOhlhais
 
 

@@ -1,6 +1,5 @@
-const { get } = require('lodash')
-const User = require('../models/user.js')
-const { randomElement } = require('../library/library.js')
+const User = require('../../models/user.js')
+const { randomElement } = require('../../library/library.js')
 
 const users = [
   {
@@ -38,9 +37,14 @@ async function getRandomUsername() {
   return user.username
 }
 
+async function getTestUser() {
+  return users[0]
+}
+
 module.exports = {
   seedUsers,
   getUsers,
-  usersSeedData: users,
+  seedData: users,
+  getTestUser,
   getRandomUsername,
 }

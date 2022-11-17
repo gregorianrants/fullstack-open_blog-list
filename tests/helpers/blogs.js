@@ -1,4 +1,4 @@
-const Blog = require('../models/blog.js')
+const Blog = require('../../models/blog.js')
 
 const blogs = [
   {
@@ -28,15 +28,14 @@ const blog = {
   likes: 2,
 }
 
-
 async function seedDB() {
-  await Blog.deleteMany()
-  const Blogs = blogs.map((blog) => new Blog(blog))
+  await Blog.Model.deleteMany()
+  const Blogs = blogs.map((blog) => new Blog.Model(blog))
   await Promise.all(Blogs.map((el) => el.save()))
 }
 
 async function getBlogs() {
-  const blogs = await Blog.find({})
+  const blogs = await Blog.Model.find({})
   return JSON.parse(JSON.stringify(blogs))
 }
 
@@ -51,10 +50,8 @@ async function getBlogsLength() {
   return blogs.length
 }
 
-
-
 async function getBlogWithId(id) {
-  const blog = await Blog.findById(id)
+  const blog = await Blog.Model.findById(id)
   return blog.toJSON()
 }
 
