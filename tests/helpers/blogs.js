@@ -32,6 +32,11 @@ async function getBlogs() {
   return JSON.parse(JSON.stringify(blogs))
 }
 
+async function getBlogNotBelongingTo(username) {
+  const blogs = await getBlogs()
+  return blogs.filter((blog) => blog.user.username !== username)
+}
+
 async function blogWithSameIdExists(blog) {
   const blogs = await getBlogs()
   const result = blogs.find((dbBlog) => dbBlog.id === blog.id)
@@ -54,6 +59,7 @@ module.exports = {
   seedDB,
   getUsersBlogs,
   getBlogs,
+  getBlogNotBelongingTo,
   blogWithSameIdExists,
   getBlogsLength,
   getBlogWithId,

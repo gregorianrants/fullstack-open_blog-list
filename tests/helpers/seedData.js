@@ -34,8 +34,15 @@ const users = [
 
 const unauthourisedUser = {
   username: 'asdfsdfsadfsadf',
-    name: 'asdfsaregtwesd',
-    password: 'asdfsadfsdfsdf',
+  name: 'asdfsaregtwesd',
+  password: 'asdfsadfsdfsdf',
+}
+
+const newBlog = {
+  title: 'new blog on the block',
+  author: 'donnie walberg',
+  url: 'https://images.dog.ceo/breeds/rottweiler/n02106550_4339.jpg',
+  likes: 10000,
 }
 
 //gives the index of user each blog should be associated with
@@ -44,6 +51,12 @@ const blogUserMapping = ['jimmlad', 'fleece', 'fleece']
 function getUsersBlogs(username) {
   return blogs.filter((blog, i) => {
     if (blogUserMapping[i] === username) return true
+  })
+}
+
+function getBlogNotBelongingTo(username) {
+  return blogs.filter((blog, i) => {
+    if (blogUserMapping[i] !== username) return true
   })
 }
 
@@ -56,6 +69,8 @@ module.exports = {
   users,
   blogUserMapping,
   unauthourisedUser,
+  newBlog,
   getUsersBlogs,
+  getBlogNotBelongingTo,
   getTestUser,
 }
