@@ -1,20 +1,7 @@
 const User = require('../../models/user.js')
 const { randomElement } = require('../../library/library.js')
 
-const users = [
-  {
-    username: 'jimmlad',
-    name: 'jim hawkins',
-    password: 'piecesofeight',
-  },
-  {
-    username: 'fleece',
-    name: 'json argonaught',
-    password: 'golden',
-  },
-]
-
-async function seedUsers() {
+async function seedUsers(users) {
   await User.deleteMany({})
   const newUsers = users.map((user) => new User(user))
   const savedUsers = await Promise.all(newUsers.map((user) => user.save()))
@@ -37,14 +24,8 @@ async function getRandomUsername() {
   return user.username
 }
 
-async function getTestUser() {
-  return users[0]
-}
-
 module.exports = {
   seedUsers,
   getUsers,
-  seedData: users,
-  getTestUser,
   getRandomUsername,
 }

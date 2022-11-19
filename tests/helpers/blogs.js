@@ -1,25 +1,8 @@
 const Blog = require('../../models/blog.js')
+const seedData = require('./seedData')
+const User = require('../../models/user.js')
 
-const blogs = [
-  {
-    title: 'React patterns',
-    author: 'Michael Chan',
-    url: 'https://reactpatterns.com/',
-    likes: 7,
-  },
-  {
-    title: 'Go To Statement Considered Harmful',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-    likes: 5,
-  },
-  {
-    title: 'Canonical string reduction',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-    likes: 12,
-  },
-]
+const blogs = seedData.blogs
 
 const blog = {
   title: 'Type wars',
@@ -30,8 +13,18 @@ const blog = {
 
 async function seedDB() {
   await Blog.Model.deleteMany()
-  const Blogs = blogs.map((blog) => new Blog.Model(blog))
-  await Promise.all(Blogs.map((el) => el.save()))
+  const savedBlogs = seedData.blogUserMapping.map(async (username, i) => {
+    const userDoc = await User.findOne({ username })
+    const blogData = seedData.blogs[i]
+    return await Blog.create({ blogData, userDoc })
+  })
+  await Promise.all(savedBlogs)
+}
+
+async function getUsersBlogs(username) {
+  const user = await User.findOne({ username })
+  const blogs = await Blog.listBlogs(user)
+  return blogs.map((blog) => blog.toJSON())
 }
 
 async function getBlogs() {
@@ -59,6 +52,7 @@ module.exports = {
   blog,
   blogs,
   seedDB,
+  getUsersBlogs,
   getBlogs,
   blogWithSameIdExists,
   getBlogsLength,
