@@ -24,8 +24,16 @@ async function getRandomUsername() {
   return user.username
 }
 
+async function getUser(username) {
+  const user = await User.findOne({ username })
+  return user
+}
+
+
+
 module.exports = {
   seedUsers,
   getUsers,
   getRandomUsername,
+  getUser,
 }

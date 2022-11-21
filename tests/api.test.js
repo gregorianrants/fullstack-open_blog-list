@@ -2,8 +2,13 @@ const blogsHelpers = require('./helpers/blogs.js')
 const usersHelpers = require('./helpers/users.js')
 const superTest = require('supertest')
 const app = require('../app.js')
-const { toIncludeSameMembers, toContainEntries } = require('jest-extended')
-expect.extend({ toIncludeSameMembers, toContainEntries })
+const {
+  toIncludeSameMembers,
+  toContainEntries,
+  toContainAllKeys,
+} = require('jest-extended')
+expect.extend({ toIncludeSameMembers, toContainEntries, toContainAllKeys })
+const Blog = require('../models/blog.js')
 
 const { configureSignInUser } = require('./helpers/login.js')
 const api = superTest(app)
@@ -30,17 +35,12 @@ describe('test seed data helpers', () => {
       },
     ])
   })
-})
 
-describe('check jest-extended matcher to make sure i understand how it works', () => {
-  test('toIncludeSameMembers', () => {
-    expect([{ foo: 'bar' }, { baz: 'qux' }]).toIncludeSameMembers([
-      { foo: 'bar' },
-      { baz: 'qux' },
-    ])
-    expect([{ foo: 'bar' }, { baz: 'qux' }]).not.toIncludeSameMembers([
-      { foo: 'bar' },
-    ])
+  test('get user other than test', () => {
+    const otherUser = seedData.getUserOtherThanTest()
+    const testUser = seedData.getTestUser()
+    expect(testUser).not.toEqual(otherUser)
+    expect(otherUser).toContainAllKeys(Object.keys(testUser))
   })
 })
 
@@ -53,7 +53,8 @@ describe('with seed data in database', () => {
   describe('check db matches seed data', () => {
     test('check blogs for user', async () => {
       async function testUser(user) {
-        let fromDb = await blogsHelpers.getUsersBlogs(user)
+        const dbUser = await usersHelpers.getUser(user)
+        let fromDb = await blogsHelpers.getUsersBlogs(dbUser.id)
         fromDb = fromDb.map(removePath('id'))
         fromDb = fromDb.map(removePath('user'))
         let fromSeed = seedData.getUsersBlogs(user)
@@ -66,6 +67,38 @@ describe('with seed data in database', () => {
     })
   }, 10000)
 
+  describe('test blogHelpers', () => {
+    test('getRandomBlogForUser', async () => {
+      const testUser = seedData.getTestUser()
+      const user = await usersHelpers.getUser(testUser.username)
+
+      const blog = await blogsHelpers.getRandomBlogForUser(user)
+
+      expect(blog.user.toString()).toEqual(user._id.toString())
+    }, 10000)
+
+    test('getUsersBlogs', async () => {
+      const { id: userId } = usersHelpers.getUser('fleece')
+      const blogs = await blogsHelpers.getUsersBlogs(userId)
+      const usernames = blogs.map((blog) => blog.user.username)
+      expect(usernames).not.toContain('jimmlad')
+    }, 10000)
+
+    test('toJSON', async () => {
+      //quick check not 100% test
+      //makes sure returned object has same values but not the same object
+      //could result if false positive if function was just clonging the object instead of stringifying then parsing.
+      const obj = { name: 'gregor' }
+      let json = blogsHelpers.toJSON(obj)
+      expect(json).toEqual(obj)
+      expect(json).not.toBe(obj)
+      const arr = [{ name: 'gregor' }, { name: 'john' }]
+      json = blogsHelpers.toJSON(arr)
+      expect(json).toEqual(arr)
+      expect(json).not.toBe(arr)
+    }, 10000)
+  })
+
   test('sign in with credentials from seed data returns 200 response code', async () => {
     const testUser = seedData.getTestUser()
     const { username, password } = testUser
@@ -73,55 +106,59 @@ describe('with seed data in database', () => {
   }, 10000)
   //TODO test webtoken contains correct data
 
-  function getBlogs(signedInUser) {
-    const promise = api
-      .get('/api/blogs')
-      .set({ Authorization: `Bearer ${signedInUser.token}` })
+  describe('get blogs', () => {
+    function getBlogs(signedInUser) {
+      const promise = api
+        .get('/api/blogs')
+        .set({ Authorization: `Bearer ${signedInUser.token}` })
 
-    return promise
-  }
+      return promise
+    }
 
-  test('get /api/blogs for valid user returns 200 status code', async () => {
-    const testUser = seedData.getTestUser()
-    const signedInUser = await signInUser(testUser)
-    await getBlogs(signedInUser).expect(200)
-  }, 10000)
+    test('get /api/blogs for valid user returns 200 status code', async () => {
+      const testUser = seedData.getTestUser()
+      const signedInUser = await signInUser(testUser)
+      await getBlogs(signedInUser).expect(200)
+    }, 10000)
 
-  test('get /api/blogs for unauthorised user returns 401 status code', async () => {
-    const testUser = seedData.unauthourisedUser
-    const signedInUser = await signInUser(testUser)
-    await getBlogs(signedInUser).expect(401)
-  }, 10000)
+    test('get /api/blogs for unauthorised user returns 401 status code', async () => {
+      const testUser = seedData.unauthourisedUser
+      const signedInUser = await signInUser(testUser)
+      await getBlogs(signedInUser).expect(401)
+    }, 10000)
 
-  test('get /api/blogs returns the right number of blogs for user', async () => {
-    const testUser = seedData.getTestUser()
-    const signedInUser = await signInUser(testUser)
-    const blogs = await getBlogs(signedInUser)
-    expect(blogs.body.length).toBe(
-      seedData.getUsersBlogs(testUser.username).length
-    )
-  }, 10000)
+    test('get /api/blogs returns the right number of blogs for user', async () => {
+      const testUser = seedData.getTestUser()
+      const signedInUser = await signInUser(testUser)
+      const blogs = await getBlogs(signedInUser)
+      expect(blogs.body.length).toBe(
+        seedData.getUsersBlogs(testUser.username).length
+      )
+    }, 10000)
 
-  test('blogs have an id property', async () => {
-    const testUser = seedData.getTestUser()
-    const signedInUser = await signInUser(testUser)
-    const blogs = await getBlogs(signedInUser)
-    blogs.body.forEach((blog) => {
-      const id = blog?.id
-      expect(id).toBeDefined()
-    })
-  }, 10000)
+    test('blogs have an id property', async () => {
+      const testUser = seedData.getTestUser()
+      const signedInUser = await signInUser(testUser)
+      const blogs = await getBlogs(signedInUser)
+      blogs.body.forEach((blog) => {
+        const id = blog?.id
+        expect(id).toBeDefined()
+      })
+    }, 10000)
 
-  test('get /api/blogs returns the correct blogs for user', async () => {
-    const testUser = seedData.getTestUser()
-    const signedInUser = await signInUser(testUser)
-    const blogs = await getBlogs(signedInUser)
-    //we remove user path becuase toIncludeSameMember - compares nested objects by ref (I think)
-    const recieved = blogs.body.map(removePath('user'))
-    let expected = await blogsHelpers.getUsersBlogs(testUser.username)
-    expected = expected.map(removePath('user'))
-    expect(expected).toIncludeSameMembers(recieved)
-  }, 10000)
+    test('get /api/blogs returns the correct blogs for user', async () => {
+      const testUser = seedData.getTestUser()
+      const signedInUser = await signInUser(testUser)
+      const { id: userId } = await usersHelpers.getUser(testUser.username)
+      const blogs = await getBlogs(signedInUser)
+      //we remove user path becuase toIncludeSameMember - compares nested objects by ref (I think)
+      const recieved = blogs.body
+      //const recieved = blogs.body.map(removePath('user'))
+      let expected = await blogsHelpers.getUsersBlogs(userId)
+      //expected = expected.map(removePath('user'))
+      expect(expected).toIncludeSameMembers(recieved)
+    }, 10000)
+  })
 
   describe('when creating a new blog post', () => {
     function createBlog(signedInUser, blog) {
@@ -162,7 +199,7 @@ describe('with seed data in database', () => {
     test('likes defaults to 0', async () => {
       let newBlog = { ...seedData.newBlog }
       delete newBlog.likes
-      console.log(newBlog)
+
       const testUser = seedData.getTestUser()
       const signedInUser = await signInUser(testUser)
       const response = await createBlog(signedInUser, newBlog)
@@ -178,12 +215,11 @@ describe('with seed data in database', () => {
 
       const newBlog = { ...seedData.newBlog }
       const noTitle = removePath('title')(newBlog)
-      console.log(noTitle)
 
       await createBlog(signedInUser, noTitle).expect(400)
 
       const noUrl = removePath('url')(newBlog)
-      console.log(noUrl)
+
       await createBlog(signedInUser, noUrl).expect(400)
     }, 10000)
   })
@@ -197,12 +233,106 @@ describe('with seed data in database', () => {
     test('get 204 status code', async () => {
       const testUser = seedData.getTestUser()
       const signedInUser = await signInUser(testUser)
-
-      const blogs = await blogsHelpers.getUsersBlogs(testUser.username)
-      const blogToDelete = blogs[0]
-      console.log(blogToDelete)
+      const { id: userId } = await usersHelpers.getUser(testUser.username)
+      const blogs = await blogsHelpers.getUsersBlogs(userId)
+      const blogToDelete = { ...blogs[0] }
 
       await deleteBlog(signedInUser, blogToDelete.id).expect(204)
     }, 10000)
+
+    test('blog is no longer in db after deletion', async () => {
+      const testUser = seedData.getTestUser()
+      const signedInUser = await signInUser(testUser)
+      const { id: userId } = await usersHelpers.getUser(testUser.username)
+      const blogs = await blogsHelpers.getUsersBlogs(userId)
+      const blogToDelete = { ...blogs[0] }
+
+      await deleteBlog(signedInUser, blogToDelete.id).expect(204)
+
+      expect(await blogsHelpers.blogWithSameIdExists(blogToDelete.id)).toBe(
+        false
+      )
+    }, 10000)
+
+    test('there are one less blogs after a deletion', async () => {
+      const testUser = seedData.getTestUser()
+
+      const signedInUser = await signInUser(testUser)
+      const { id: userId } = await usersHelpers.getUser(testUser.username)
+      const blogsBefore = await blogsHelpers.getUsersBlogs(userId)
+      const blogToDelete = { ...blogsBefore[0] }
+      await deleteBlog(signedInUser, blogToDelete.id).expect(204)
+      const blogsAfter = await blogsHelpers.getUsersBlogs(userId)
+      expect(blogsAfter.length).toBe(blogsBefore.length - 1)
+    }, 10000)
+
+    test('atempt to delete another users blog returns 401 unauthorised', async () => {
+      const testUser = seedData.getTestUser()
+      const signedInUser = await signInUser(testUser)
+      const otherUser = seedData.getUserOtherThanTest()
+      const { id: userId } = await usersHelpers.getUser(otherUser.username)
+      const blogs = await blogsHelpers.getUsersBlogs(userId)
+      const blogToDelete = { ...blogs[0] }
+
+      await deleteBlog(signedInUser, blogToDelete.id).expect(401)
+    }, 10000)
+
+    test('same number of blogs in db after attempting to delete another users blog', async () => {
+      const testUser = seedData.getTestUser()
+      const signedInUser = await signInUser(testUser)
+      const otherUser = seedData.getUserOtherThanTest()
+      const blogsBefore = await blogsHelpers.getBlogs()
+      const { id: userId } = await usersHelpers.getUser(otherUser.username)
+      const blogs = await blogsHelpers.getUsersBlogs(userId)
+      const blogToDelete = { ...blogs[0] }
+
+      await deleteBlog(signedInUser, blogToDelete.id).expect(401)
+
+      const blogsAfter = await blogsHelpers.getBlogs()
+
+      expect(blogsAfter).toEqual(blogsBefore)
+    })
+  }, 10000)
+
+  describe('when updating a blog', () => {
+    const updateBlog = (updateData, blogId, signedInUser) => {
+      return api
+        .put(`/api/blogs/${blogId}`)
+        .set({ Authorization: `Bearer ${signedInUser.token}` })
+        .send(updateData)
+    }
+
+    test('status code should be 200', async () => {
+      const testUser = seedData.getTestUser()
+      const signedInUser = await signInUser(testUser)
+      const { id: userId } = await usersHelpers.getUser(testUser.username)
+      const blogs = await blogsHelpers.getUsersBlogs(userId)
+      const blogToUpdate = blogs[0]
+
+      await updateBlog({ likes: 1000 }, blogToUpdate.id, signedInUser).expect(
+        200
+      )
+    }, 10000)
+
+    test('returned body has correct values', async () => {
+      const testUser = seedData.getTestUser()
+      const testUserDb = await usersHelpers.getUser(testUser.username)
+      const signedInUser = await signInUser(testUser)
+      const blogToUpdate = await blogsHelpers.getRandomBlogForUser(
+        testUserDb._id
+      )
+
+      const updateData = { likes: 1000 }
+
+      const response = await updateBlog(
+        updateData,
+        blogToUpdate.id,
+        signedInUser
+      ).expect(200)
+
+      expect(response.body).toEqual({ ...blogToUpdate, ...updateData })
+    }, 10000)
+
+    test('db record has correct values', async () => {})
   })
 })

@@ -1,9 +1,10 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog.js')
 
+//NOTE BADLY the get blogs route populates the blogs the others dont!
 
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.listBlogs(request.user)
+  const blogs = await Blog.listBlogs(request.user._id)
   response.json(blogs)
 })
 
@@ -17,11 +18,15 @@ blogsRouter.delete('/:id', async (request, response) => {
   const { id } = request.params
   const userId = request.user._id
   const blog = await Blog.Model.findById(id)
-  if (!blog) return response.status(204).end()
-  if (blog.user.toString() !== userId.toString())
-    response
+  if (!blog) {
+    return response.status(204).end()
+  }
+  if (blog.user.toString() !== userId.toString()) {
+    return response
       .status(401)
       .json({ error: 'you are not authorised to delete this blog' })
+  }
+  await Blog.Model.deleteOne({ _id: id })
   response.status(204).end()
 })
 

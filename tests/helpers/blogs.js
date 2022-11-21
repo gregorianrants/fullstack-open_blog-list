@@ -1,15 +1,16 @@
 const Blog = require('../../models/blog.js')
 const seedData = require('./seedData')
 const User = require('../../models/user.js')
+const library = require('../../library/library.js')
 
 const blogs = seedData.blogs
 
-const blog = {
-  title: 'Type wars',
-  author: 'Robert C. Martin',
-  url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
-  likes: 2,
-}
+// const blog = {
+//   title: 'Type wars',
+//   author: 'Robert C. Martin',
+//   url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
+//   likes: 2,
+// }
 
 async function seedDB() {
   await Blog.Model.deleteMany()
@@ -21,18 +22,27 @@ async function seedDB() {
   await Promise.all(savedBlogs)
 }
 
-async function getUsersBlogs(username) {
-  const user = await User.findOne({ username })
-  const blogs = await Blog.listBlogs(user)
-  return blogs.map((blog) => blog.toJSON())
+function toJSON(docOrArray) {
+  function toJSON(doc) {
+    return JSON.parse(JSON.stringify(doc))
+  }
+  if (Array.isArray(docOrArray)) {
+    return docOrArray.map(toJSON)
+  }
+  return toJSON(docOrArray)
 }
 
 async function getBlogs() {
   const blogs = await Blog.Model.find({})
-  return JSON.parse(JSON.stringify(blogs))
+  return toJSON(blogs)
 }
 
-async function getBlogNotBelongingTo(username) {
+async function getUsersBlogs(userId) {
+  const blogs = await Blog.Model.find({ user: userId }).populate('user')
+  return toJSON(blogs)
+}
+
+async function getBlogsNotBelongingTo(username) {
   const blogs = await getBlogs()
   return blogs.filter((blog) => blog.user.username !== username)
 }
@@ -43,24 +53,24 @@ async function blogWithSameIdExists(blog) {
   return Boolean(result)
 }
 
-async function getBlogsLength() {
-  const blogs = await getBlogs()
-  return blogs.length
-}
-
 async function getBlogWithId(id) {
   const blog = await Blog.Model.findById(id)
-  return blog.toJSON()
+  return toJSON(blog)
+}
+
+async function getRandomBlogForUser(userId) {
+  const blog = await Blog.Model.find({ user: userId })
+  return library.randomElement(toJSON(blog))
 }
 
 module.exports = {
-  blog,
   blogs,
   seedDB,
   getUsersBlogs,
   getBlogs,
-  getBlogNotBelongingTo,
+  getBlogsNotBelongingTo,
   blogWithSameIdExists,
-  getBlogsLength,
   getBlogWithId,
+  getRandomBlogForUser,
+  toJSON,
 }

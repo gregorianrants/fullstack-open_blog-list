@@ -17,8 +17,8 @@ blogSchema.set('toJSON', {
   },
 })
 
-async function listBlogs(user) {
-  const blogs = await Blog.find({ user: user._id }).populate('user')
+async function listBlogs(userId) {
+  const blogs = await Blog.find({ user: userId }).populate('user')
   return blogs
 }
 

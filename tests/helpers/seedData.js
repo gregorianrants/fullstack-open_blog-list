@@ -19,6 +19,7 @@ const blogs = [
   },
 ]
 
+
 const users = [
   {
     username: 'fleece',
@@ -64,6 +65,11 @@ function getTestUser() {
   return users[0]
 }
 
+function getUserOtherThanTest() {
+  const testUser = getTestUser()
+  return users.filter((user) => user.username !== testUser.username)[0]
+}
+
 module.exports = {
   blogs,
   users,
@@ -73,4 +79,5 @@ module.exports = {
   getUsersBlogs,
   getBlogNotBelongingTo,
   getTestUser,
+  getUserOtherThanTest,
 }
