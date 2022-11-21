@@ -37,6 +37,7 @@ async function create({ blogData, userDoc }) {
   return savedBlog
 }
 
+
 const Blog = mongoose.model('Blog', blogSchema)
 
 module.exports = { Model: Blog, listBlogs, create }
