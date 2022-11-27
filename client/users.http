@@ -1,12 +1,23 @@
-
+###create user 1
 POST http://localhost:3003/api/users
 Content-Type: application/json
 
 {
-  "username": "zeusd",
+  "username": "zeus",
   "name": "jimmy",
-  "password": "olympus"
+  "password": "cloud"
 }
+
+###create user 2
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+  "username": "appolo",
+  "name": "hamish",
+  "password": "goldenbow"
+}
+
 
 ###get users
 GET http://localhost:3003/api/users

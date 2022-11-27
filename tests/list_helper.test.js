@@ -2,8 +2,8 @@ const {
   dummy,
   totalLikes,
   favouriteBlog,
-  authorWithMostBlogs,
-  authorWithMostLikes,
+  mostBlogs,
+  mostLikes,
 } = require('../utils/list_helper')
 const isEqualToOneOff = require('../test_extensions/isEqualtoOneOff.js')
 
@@ -245,11 +245,11 @@ describe('favouriteBlog', () => {
   })
 })
 
-describe('authorWithMostBlogs', () => {
+describe('mostBlogs', () => {
   test('empty array', () => {
     const blogs = []
 
-    const result = authorWithMostBlogs(blogs)
+    const result = mostBlogs(blogs)
     expect(result).toEqual({
       author: null,
       blogs: null,
@@ -268,7 +268,7 @@ describe('authorWithMostBlogs', () => {
       },
     ]
 
-    const result = authorWithMostBlogs(blogs)
+    const result = mostBlogs(blogs)
 
     expect(result).toEqual({
       author: 'Michael Chan',
@@ -304,7 +304,7 @@ describe('authorWithMostBlogs', () => {
       },
     ]
 
-    const result = authorWithMostBlogs(blogs)
+    const result = mostBlogs(blogs)
 
     expect(result).toEqual({
       author: 'Edsger W. Dijkstra',
@@ -348,7 +348,7 @@ describe('authorWithMostBlogs', () => {
       },
     ]
 
-    const result = authorWithMostBlogs(blogs)
+    const result = mostBlogs(blogs)
 
     expect(result).isEqualToOneOff([
       {
@@ -363,11 +363,11 @@ describe('authorWithMostBlogs', () => {
   })
 })
 
-describe('authorWithMostLikes', () => {
+describe('mostLikes', () => {
   test('empty array', () => {
     const blogs = []
 
-    const result = authorWithMostLikes(blogs)
+    const result = mostLikes(blogs)
     expect(result).toEqual({
       author: null,
       likes: null,
@@ -386,7 +386,7 @@ describe('authorWithMostLikes', () => {
       },
     ]
 
-    const result = authorWithMostLikes(blogs)
+    const result = mostLikes(blogs)
 
     expect(result).toEqual({
       author: 'Edsger W. Dijkstra',
@@ -422,7 +422,7 @@ describe('authorWithMostLikes', () => {
       },
     ]
 
-    const result = authorWithMostLikes(blogs)
+    const result = mostLikes(blogs)
 
     expect(result).toEqual({
       author: 'Edsger W. Dijkstra',
@@ -482,7 +482,7 @@ describe('authorWithMostLikes', () => {
       },
     ]
 
-    const result = authorWithMostLikes(blogs)
+    const result = mostLikes(blogs)
 
     expect(result).isEqualToOneOff([
       {

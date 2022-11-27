@@ -1,7 +1,17 @@
+###login user 1
 POST http://localhost:3003/api/login
 Content-Type: application/json
 
 {
   "username": "zeus",
-  "password": "olympus"
+  "password": "cloud"
+}
+
+###login user 2
+POST http://localhost:3003/api/login
+Content-Type: application/json
+
+{
+  "username": "appolo",
+  "password": "goldenbow"
 }

@@ -41,7 +41,7 @@ const favouriteBlog = (blogs) => {
   return highestValueForProperty(blogs, 'likes')
 }
 
-function authorWithMostBlogs(blogs) {
+function mostBlogs(blogs) {
   if (blogs.length === 0) {
     return {
       author: null,
@@ -52,7 +52,7 @@ function authorWithMostBlogs(blogs) {
   return highestValueForProperty(statisticsArray, ['blogs'])
 }
 
-function authorWithMostLikes(blogs) {
+function mostLikes(blogs) {
   if (blogs.length === 0) {
     return {
       author: null,
@@ -67,6 +67,6 @@ module.exports = {
   dummy,
   totalLikes,
   favouriteBlog,
-  authorWithMostBlogs,
-  authorWithMostLikes,
+  mostBlogs,
+  mostLikes,
 }

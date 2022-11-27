@@ -28,8 +28,7 @@ describe('with seed data in database', () => {
         fromDb = fromDb.map(removePath('id'))
         fromDb = fromDb.map(removePath('user'))
         let fromSeed = seedData.getUsersBlogs(user)
-        // expect(fromDb).toEqual(expect.arrayContaining(fromSeed))
-        // expect(fromSeed).toEqual(expect.arrayContaining(fromDb))
+        expect(fromDb.length).toEqual(seedData.numberOfBlogsForUser(user))
         expect(fromDb).toIncludeSameMembers(fromSeed)
       }
       await testUser('fleece')
@@ -41,18 +40,24 @@ describe('with seed data in database', () => {
     test('getRandomBlogForUser', async () => {
       const testUser = seedData.getTestUser()
       const user = await usersHelpers.getUser(testUser.username)
-
       const blog = await blogsHelpers.getRandomBlogForUser(user)
-
       expect(blog.user.toString()).toEqual(user._id.toString())
     }, 10000)
 
     test('getUsersBlogs', async () => {
-      const { id: userId } = usersHelpers.getUser('fleece')
+      const { id: userId } = await usersHelpers.getUser('fleece')
       const blogs = await blogsHelpers.getUsersBlogs(userId)
       const usernames = blogs.map((blog) => blog.user.username)
       expect(usernames).not.toContain('jimmlad')
+      expect(usernames).toContain('fleece')
     }, 10000)
+
+    test('getBlogsNotBelongingTo', async () => {
+      const blogs = await blogsHelpers.getBlogsNotBelongingTo('fleece')
+      const usernames = blogs.map((blog) => blog.user.username)
+      expect(usernames).not.toContainEqual('fleece')
+      expect(usernames).toContainEqual('jimmlad')
+    })
 
     test('toJSON', async () => {
       //quick check not 100% test
@@ -67,5 +72,18 @@ describe('with seed data in database', () => {
       expect(json).toEqual(arr)
       expect(json).not.toBe(arr)
     }, 10000)
+
+    test('getBlogIdNotInDb', async () => {
+      const blogs = await blogsHelpers.getBlogs()
+      const blogsIds = blogs.map((blog) => blog.id)
+      const blogIdNotInDb = blogsHelpers.getBlogIdNotInDb()
+
+      blogsIds.forEach((id) => {
+        expect(String(id)).toBe(id)
+        expect(id.length).toBe(blogIdNotInDb.length)
+      })
+
+      expect(blogs.map((blog) => blog.id)).not.toContain(blogIdNotInDb)
+    })
   })
 })

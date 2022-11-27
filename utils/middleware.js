@@ -13,9 +13,18 @@ const unknownEndpoint = (request, response) => {
 }
 
 const errorHandler = (error, request, response, next) => {
+  //console.log(error)
   logger.error(error.message)
 
-  if (error.name === 'CastError') {
+  /*
+  if we get an error validating data for mongoose it slighlty different if error is validation error or cast error
+  if we get an error validating data it will be a ValidationError with an errors property pointing to an object
+  the properties of the object are the path names for the errors
+  each of these could be a CastError or a ValidatorError pay attention to difference between validation and validator
+  if we get a cast error with the _id we get a simple CastError not a ValidationError with an errors property
+  */
+
+  if (error.name === 'CastError' && error.path === '_id') {
     return response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })

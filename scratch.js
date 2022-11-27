@@ -1,43 +1,54 @@
-[
+const blogs = [
   {
-    title: 'Canonical string reduction',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-    user: {
-      username: 'fleece',
-      name: 'json argonaught',
-      blogs: [Array],
-      id: '637a75b770b7dcaa53db4944'
-    },
-    likes: 12,
-    id: '637a75b770b7dcaa53db494e'
+    title: 'React patterns',
+    author: 'Michael Chan',
+    url: 'https://reactpatterns.com/',
+    likes: 7,
+    username: 'fleece',
   },
   {
     title: 'Go To Statement Considered Harmful',
     author: 'Edsger W. Dijkstra',
     url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-    user: {
-      username: 'fleece',
-      name: 'json argonaught',
-      blogs: [Array],
-      id: '637a75b770b7dcaa53db4944'
-    },
     likes: 5,
-    id: '637a75b770b7dcaa53db4952'
-    id: '637a75b770b7dcaa53db4952'
-  }
+    user: 'fleece',
+  },
+  {
+    title: 'Canonical string reduction',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+    likes: 12,
+    username: 'jimmlad',
+  },
 ]
 
-{
-  title: 'Canonical string reduction',
-  author: 'Edsger W. Dijkstra',
-  url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-  user: {
+const users = [
+  {
     username: 'fleece',
     name: 'json argonaught',
-    blogs: [ '637a75b770b7dcaa53db494e' ],
-    id: '637a75b770b7dcaa53db4944'
+    password: 'golden',
   },
-  likes: 12,
-  id: '637a75b770b7dcaa53db494e'
+  {
+    username: 'jimmlad',
+    name: 'jim hawkins',
+    password: 'piecesofeight',
+  },
+]
+
+function populateBlogs(blogs, users) {
+  blogs.map(
+    (blog) =>
+      (blog.username = users.find((user) => user.username === blog.username))
+  )
+}
+
+function populateUsers(users,blogs){
+
+}
+
+
+class Ref{
+  init(collection){
+    this.collection = collection
+  }
 }

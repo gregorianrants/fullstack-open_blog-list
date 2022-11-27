@@ -27,4 +27,9 @@ describe('test seed data helpers', () => {
     expect(testUser).not.toEqual(otherUser)
     expect(otherUser).toContainAllKeys(Object.keys(testUser))
   })
+
+  test('numberOfBlogsForUser', () => {
+    expect(seedData.numberOfBlogsForUser('fleece')).toBe(2)
+    expect(seedData.numberOfBlogsForUser('jimmlad')).toBe(1)
+  })
 })

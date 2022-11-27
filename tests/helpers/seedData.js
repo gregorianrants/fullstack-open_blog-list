@@ -19,7 +19,6 @@ const blogs = [
   },
 ]
 
-
 const users = [
   {
     username: 'fleece',
@@ -49,10 +48,18 @@ const newBlog = {
 //gives the index of user each blog should be associated with
 const blogUserMapping = ['jimmlad', 'fleece', 'fleece']
 
+function getBlogs() {
+  return blogs
+}
+
 function getUsersBlogs(username) {
   return blogs.filter((blog, i) => {
     if (blogUserMapping[i] === username) return true
   })
+}
+
+function numberOfBlogsForUser(username) {
+  return blogUserMapping.filter((user) => user === username).length
 }
 
 function getBlogNotBelongingTo(username) {
@@ -76,8 +83,10 @@ module.exports = {
   blogUserMapping,
   unauthourisedUser,
   newBlog,
+  getBlogs,
   getUsersBlogs,
   getBlogNotBelongingTo,
   getTestUser,
   getUserOtherThanTest,
+  numberOfBlogsForUser,
 }

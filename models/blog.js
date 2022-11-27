@@ -17,8 +17,15 @@ blogSchema.set('toJSON', {
   },
 })
 
-async function listBlogs(userId) {
-  const blogs = await Blog.find({ user: userId }).populate('user')
+function populateUsers(query) {
+  return query.populate('user', {
+    username: 1,
+    name: 1,
+  })
+}
+
+async function listBlogs() {
+  const blogs = await populateUsers(Blog.find())
   return blogs
 }
 
@@ -37,7 +44,6 @@ async function create({ blogData, userDoc }) {
   return savedBlog
 }
 
-
 const Blog = mongoose.model('Blog', blogSchema)
 
-module.exports = { Model: Blog, listBlogs, create }
+module.exports = { Model: Blog, listBlogs, create, populateUsers }

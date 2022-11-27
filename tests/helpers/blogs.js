@@ -2,6 +2,7 @@ const Blog = require('../../models/blog.js')
 const seedData = require('./seedData')
 const User = require('../../models/user.js')
 const library = require('../../library/library.js')
+const { flow } = require('lodash')
 
 const blogs = seedData.blogs
 
@@ -33,13 +34,14 @@ function toJSON(docOrArray) {
 }
 
 async function getBlogs() {
-  const blogs = await Blog.Model.find({})
+  const blogs = await Blog.populateUsers(Blog.Model.find({}))
   return toJSON(blogs)
 }
 
 async function getUsersBlogs(userId) {
-  const blogs = await Blog.Model.find({ user: userId }).populate('user')
-  return toJSON(blogs)
+  return await Blog.populateUsers(Blog.Model.find({ user: userId })).then(
+    toJSON
+  )
 }
 
 async function getBlogsNotBelongingTo(username) {
@@ -63,6 +65,11 @@ async function getRandomBlogForUser(userId) {
   return library.randomElement(toJSON(blog))
 }
 
+function getBlogIdNotInDb() {
+  const newBlog = new Blog.Model({ ...seedData.newBlog })
+  return newBlog.id.toString()
+}
+
 module.exports = {
   blogs,
   seedDB,
@@ -73,4 +80,5 @@ module.exports = {
   getBlogWithId,
   getRandomBlogForUser,
   toJSON,
+  getBlogIdNotInDb,
 }

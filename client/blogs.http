@@ -1,11 +1,25 @@
-###create blog with valid header
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InpldXMiLCJpZCI6IjYzN2NlZmIzYTI2NWE5MjNiZWRlNzA3ZCIsImlhdCI6MTY2OTEzMjgxMH0.H72F4grfxjPCwXoDZ5nAFo6ws5J1dah_n1Dmn7VUUEE
+@token2 = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFwcG9sbyIsImlkIjoiNjM3Y2VmYjZhMjY1YTkyM2JlZGU3MDgwIiwiaWF0IjoxNjY5MTMyMzQ4fQ.CtmTa8f_ab_vBJrL9PvTU7xaG4MgYPW91wUkERlduWU
+
+###create blog for user 1
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InpldXMiLCJpZCI6IjYzNzU1MzkyZjlmM2NkZmQ1NDRmYWNiMyIsImlhdCI6MTY2ODcxOTA4NX0.w_lxavwOnKYnUOsTWbGZYn3ta_cBv2tNCiOIqiTvi04
+Authorization: Bearer {{token}}
 
+{
+  "title": "ofsdfsdfsdf brian",
+  "author": "monty python",
+  "url": "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
+  "likes": "not a number"
+}
 
-  {
-  "title": "the mearnzxczxczxczxcing of life",
+###create blog for user 2
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer {{token2}}
+
+{
+  "title": "the  ofsfdsdfsd life",
   "author": "monty python",
   "url": "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
   "likes": "2"
@@ -14,8 +28,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inpld
 ###create blog with invalid header
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InpldXMiLCJpZCI6IjYzNzU1MzkyZjlmM2NkZmQ1NDRmYWNiMyIsImlhdCI6MTY2ODYzMzUxM30.dET4dhFJhy2w0OWBiVn3s055ssdIkwNOFrzaOhlhais
-
+Authorization: Bearer {{token}}
 
   {
   "title": "the mearnzxczxczxczxcing of life",
@@ -40,7 +53,7 @@ Content-Type: application/json
 
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InpldXMiLCJpZCI6IjYzNzU1MzkyZjlmM2NkZmQ1NDRmYWNiMyIsImlhdCI6MTY2ODYzMzUxM30.dET4dhFJhy2w0OWBiVn3s055ssdIkwNOFrzaOhlhais
+Authorization: Basic {{token}}
 
   {
   "title": "the mearnzxczxczxczxcing of life",
@@ -49,12 +62,114 @@ Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InpldX
   "likes": "2"
 }
 
-###get blogs
+###get blogs for user 1
 GET http://localhost:3003/api/blogs
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InpldXMiLCJpZCI6IjYzNzU1MzkyZjlmM2NkZmQ1NDRmYWNiMyIsImlhdCI6MTY2ODYzMzUxM30.dET4dhFJhy2w0OWBiVn3s055ssdIkwNOFrzaOhlhais
+Authorization: Bearer {{token}}
+
+###get blogs for user 2
+GET http://localhost:3003/api/blogs
+Authorization: Bearer {{token2}}
+
 
 ###delete blog
 DELETE http://localhost:3003/api/blogs/637553cbf9f3cdfd544facb8
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InpldXMiLCJpZCI6IjYzNzU1MzkyZjlmM2NkZmQ1NDRmYWNiMyIsImlhdCI6MTY2ODYzMzUxM30.dET4dhFJhy2w0OWBiVn3s055ssdIkwNOFrzaOhlhais
+Authorization: Bearer {{token}}
+
+###update blog likes
+PUT http://localhost:3003/api/blogs/637cf397928e5f9034f278f9
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "likes": "1000"
+}
+
+###update likes with non castable value
+PUT http://localhost:3003/api/blogs/637cf397928e5f9034f278f9
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "likes": "not castable"
+}
+
+###update likes without value
+PUT http://localhost:3003/api/blogs/637cf397928e5f9034f278f9
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+ 
+}
+
+###update likes with null value
+PUT http://localhost:3003/api/blogs/637cf397928e5f9034f278f9
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+ "likes": null
+}
+
+
+
+
+
+
+###update non updateable path
+PUT http://localhost:3003/api/blogs/637cf397928e5f9034f278f9
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "this is fferent"
+}
+
+
+###update blog for different user
+
+PUT http://localhost:3003/api/blogs/637cf397928e5f9034f278f9
+Content-Type: application/json
+Authorization: Bearer {{token2}}
+
+{
+  "likes": 200
+}
+###update blog with path not in schema
+
+
+PUT http://localhost:3003/api/blogs/637cf397928e5f9034f278f9
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "this is fferdddent",
+  "garbage": "this is garbage"
+}
+
+###update blog with invalid token
+
+PUT http://localhost:3003/api/blogs/637cf3a4928e5f9034f27905
+Content-Type: application/json
+Authorization: Bearer asdfsadfsadfsadfsadfsadf
+
+{
+  "title": "this is fferdddent",
+  "garbage": "this is garbage"
+}
+
+###update blog likes with malformatted id
+PUT http://localhost:3003/api/blogs/6
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "likes": "1000"
+}
+
+
+
+
+
 
 
