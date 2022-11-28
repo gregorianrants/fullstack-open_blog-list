@@ -1,36 +1,48 @@
+const { removePath } = require('../../library/library')
+
+const ARAGON = 'aragon'
+const GANDALF = 'gandalf'
+
 const blogs = [
   {
     title: 'React patterns',
     author: 'Michael Chan',
     url: 'https://reactpatterns.com/',
     likes: 7,
+    user: ARAGON,
   },
   {
     title: 'Go To Statement Considered Harmful',
     author: 'Edsger W. Dijkstra',
     url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
     likes: 5,
+    user: GANDALF,
   },
   {
     title: 'Canonical string reduction',
     author: 'Edsger W. Dijkstra',
     url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-    likes: 12,
+    likes: 8,
+    user: GANDALF,
   },
 ]
 
 const users = [
   {
-    username: 'fleece',
-    name: 'json argonaught',
-    password: 'golden',
+    username: GANDALF,
+    name: 'gandalf mithras',
+    password: 'speakfriendandenter',
   },
   {
-    username: 'jimmlad',
-    name: 'jim hawkins',
-    password: 'piecesofeight',
+    username: ARAGON,
+    name: 'strider ranger',
+    password: 'swordthatwasbroken',
   },
 ]
+
+function numberOfBlogsWithUsername(username) {
+  return blogs.filter((blog) => blog.user === username).length
+}
 
 const unauthourisedUser = {
   username: 'asdfsdfsadfsadf',
@@ -46,26 +58,42 @@ const newBlog = {
 }
 
 //gives the index of user each blog should be associated with
-const blogUserMapping = ['jimmlad', 'fleece', 'fleece']
 
 function getBlogs() {
   return blogs
 }
 
-function getUsersBlogs(username) {
-  return blogs.filter((blog, i) => {
-    if (blogUserMapping[i] === username) return true
+function getUser(username) {
+  return users.find((user) => user.username === username)
+}
+
+function populateBlogs(blogs) {
+  return blogs.map((blog) => {
+    let user = { ...getUser(blog.user) }
+    user = removePath('password')(user)
+    blog = { ...blog }
+    blog.user = user
+    return blog
   })
 }
 
-function numberOfBlogsForUser(username) {
-  return blogUserMapping.filter((user) => user === username).length
+function populateUsers(users) {
+  return users.map((user) => {
+    user = { ...user }
+    user = removePath('password')(user)
+    let blogs = [...getUsersBlogs(user.username)]
+    blogs = blogs.map(removePath('user'))
+    user.blogs = blogs
+    return user
+  })
+}
+
+function getUsersBlogs(username) {
+  return blogs.filter((blog) => blog.user === username)
 }
 
 function getBlogNotBelongingTo(username) {
-  return blogs.filter((blog, i) => {
-    if (blogUserMapping[i] !== username) return true
-  })
+  return blogs.filter((blog) => blog.user !== username)
 }
 
 function getTestUser() {
@@ -78,15 +106,19 @@ function getUserOtherThanTest() {
 }
 
 module.exports = {
+  GANDALF,
+  ARAGON,
   blogs,
   users,
-  blogUserMapping,
   unauthourisedUser,
   newBlog,
-  getBlogs,
+  getBlogs, //todo remove this and replace usages
+  getUser,
   getUsersBlogs,
   getBlogNotBelongingTo,
   getTestUser,
   getUserOtherThanTest,
-  numberOfBlogsForUser,
+  populateBlogs,
+  populateUsers,
+  numberOfBlogsWithUsername,
 }

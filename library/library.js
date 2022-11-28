@@ -1,3 +1,5 @@
+const { cloneDeep, unset } = require('lodash')
+
 function withoutId(blog) {
   let result = { ...blog }
   delete result.id
@@ -6,8 +8,8 @@ function withoutId(blog) {
 
 function removePath(pathname) {
   return function (obj) {
-    let result = { ...obj }
-    delete result[pathname]
+    let result = cloneDeep(obj)
+    unset(result, pathname)
     return result
   }
 }
@@ -22,9 +24,15 @@ function randomElement(arr) {
   return arr[randomIndex]
 }
 
+function prettyPrint(obj) {
+  let json = JSON.stringify(obj, null, 2)
+  console.log(json)
+}
+
 module.exports = {
   withoutId,
   removePath,
   randomInt,
   randomElement,
+  prettyPrint
 }

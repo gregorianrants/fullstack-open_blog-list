@@ -2,7 +2,6 @@ const Blog = require('../../models/blog.js')
 const seedData = require('./seedData')
 const User = require('../../models/user.js')
 const library = require('../../library/library.js')
-const { flow } = require('lodash')
 
 const blogs = seedData.blogs
 
@@ -15,9 +14,10 @@ const blogs = seedData.blogs
 
 async function seedDB() {
   await Blog.Model.deleteMany()
-  const savedBlogs = seedData.blogUserMapping.map(async (username, i) => {
-    const userDoc = await User.findOne({ username })
-    const blogData = seedData.blogs[i]
+  const savedBlogs = seedData.blogs.map(async (blog) => {
+    const userDoc = await User.Model.findOne({ username: blog.user })
+    const blogData = { ...blog }
+    delete blogData.user
     return await Blog.create({ blogData, userDoc })
   })
   await Promise.all(savedBlogs)

@@ -22,17 +22,21 @@ describe('with seed data in database', () => {
 
   describe('check db matches seed data', () => {
     test('check blogs for user', async () => {
-      async function testUser(user) {
-        const dbUser = await usersHelpers.getUser(user)
-        let fromDb = await blogsHelpers.getUsersBlogs(dbUser.id)
+      async function testUser(userName) {
+        const dbUser = await usersHelpers.getUser(userName)
+        let fromDb = await blogsHelpers.getUsersBlogs(dbUser._id.toString())
         fromDb = fromDb.map(removePath('id'))
-        fromDb = fromDb.map(removePath('user'))
-        let fromSeed = seedData.getUsersBlogs(user)
-        expect(fromDb.length).toEqual(seedData.numberOfBlogsForUser(user))
+        fromDb = fromDb.map(removePath('user.id'))
+
+        let fromSeed = seedData.populateBlogs(seedData.getUsersBlogs(userName))
+        expect(fromDb.length).toEqual(
+          seedData.numberOfBlogsWithUsername(userName)
+        )
+
         expect(fromDb).toIncludeSameMembers(fromSeed)
       }
-      await testUser('fleece')
-      await testUser('jimmlad')
+      await testUser(seedData.GANDALF)
+      await testUser(seedData.ARAGON)
     })
   }, 10000)
 
@@ -45,18 +49,18 @@ describe('with seed data in database', () => {
     }, 10000)
 
     test('getUsersBlogs', async () => {
-      const { id: userId } = await usersHelpers.getUser('fleece')
+      const { id: userId } = await usersHelpers.getUser(seedData.GANDALF)
       const blogs = await blogsHelpers.getUsersBlogs(userId)
       const usernames = blogs.map((blog) => blog.user.username)
-      expect(usernames).not.toContain('jimmlad')
-      expect(usernames).toContain('fleece')
+      expect(usernames).not.toContain(seedData.ARAGON)
+      expect(usernames).toContain(seedData.GANDALF)
     }, 10000)
 
     test('getBlogsNotBelongingTo', async () => {
-      const blogs = await blogsHelpers.getBlogsNotBelongingTo('fleece')
+      const blogs = await blogsHelpers.getBlogsNotBelongingTo(seedData.GANDALF)
       const usernames = blogs.map((blog) => blog.user.username)
-      expect(usernames).not.toContainEqual('fleece')
-      expect(usernames).toContainEqual('jimmlad')
+      expect(usernames).not.toContainEqual(seedData.GANDALF)
+      expect(usernames).toContainEqual(seedData.ARAGON)
     })
 
     test('toJSON', async () => {

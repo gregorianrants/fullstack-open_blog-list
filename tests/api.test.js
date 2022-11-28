@@ -16,7 +16,6 @@ const signInUser = configureSignInUser(api)
 
 const { removePath } = require('../library/library')
 const seedData = require('./helpers/seedData.js')
-const Blog = require('../models/blog.js')
 
 //todo check you have adequate tests for content type and status codes
 //TODO test for invalid id
@@ -162,24 +161,29 @@ describe('with seed data in database', () => {
           .get('/api/users')
           .expect(200)
           .expect('Content-Type', /application\/json/)
-      })
-      test('fetched users matches seed data for user', async () => {
+      }, 10000)
+
+      test('same number of users in api response and seed data', async () => {
         const response = await api
           .get('/api/users')
           .expect(200)
           .expect('Content-Type', /application\/json/)
 
-        const DBUsers = response.body.map(removePath('id'))
-        console.log(DBUsers)
+        const recieved = response.body
 
-        const seedUsers = seedData.users
+        expect(recieved.length).toEqual(seedData.users.length)
+      }, 10000)
 
-        expect(DBUsers).toIncludeSameMembers(DBUsers)
-      })
+      test('fetched users data is same as data in db', async () => {
+        const response = await api
+          .get('/api/users')
+          .expect(200)
+          .expect('Content-Type', /application\/json/)
 
-      test('populated blogs have the correct fields', () => {
-        expect(false).toBe(true)
-      })
+        const recieved = response.body
+        const fromDb = await usersHelpers.getUsers()
+        expect(recieved).toIncludeSameMembers(fromDb)
+      }, 10000)
     })
   })
 
@@ -202,16 +206,17 @@ describe('with seed data in database', () => {
       }, 10000)
 
       test('get /api/blogs for unauthorised user returns 401 status code', async () => {
-        const testUser = seedData.unauthourisedUser
-        const signedInUser = await signInUser(testUser)
-        await getBlogs(signedInUser).expect(401)
+        api
+          .get('/api/blogs')
+          .set({ Authorization: 'Bearer invalidnonsense' })
+          .expect(401)
       }, 10000)
 
       test('get /api/blogs returns the right number of blogs', async () => {
         const testUser = seedData.getTestUser()
         const signedInUser = await signInUser(testUser)
         const blogs = await getBlogs(signedInUser)
-        expect(blogs.body.length).toBe(seedData.getBlogs().length)
+        expect(blogs.body.length).toBe(seedData.blogs.length)
       }, 10000)
 
       test('blogs have an id property', async () => {
@@ -252,6 +257,10 @@ describe('with seed data in database', () => {
           .send(blog)
       }
 
+      test('blog fails with the proper status code 401 Unauthorized if a token is not provided.',()=>{
+        expect(true).toBe(false)
+      })
+
       test('response has 201 status code and correct content-type header', async () => {
         const testUser = seedData.getTestUser()
         const signedInUser = await signInUser(testUser)
@@ -267,7 +276,7 @@ describe('with seed data in database', () => {
 
         const blogs = await blogsHelpers.getBlogs()
 
-        expect(blogs.length).toEqual(seedData.getBlogs().length + 1)
+        expect(blogs.length).toEqual(seedData.blogs.length + 1)
       }, 10000)
 
       test('the created blog has the expected properties and values', async () => {
@@ -275,9 +284,16 @@ describe('with seed data in database', () => {
         const signedInUser = await signInUser(testUser)
         const response = await createBlog(signedInUser, seedData.newBlog)
         const createdBlog = response.body
-        const dbBlog = await blogsHelpers.getBlogWithId(createdBlog.id)
 
-        expect(dbBlog).toContainEntries(Object.entries(seedData.newBlog))
+        let expected = { ...seedData.newBlog }
+        expected.user = signedInUser.id
+        expected.user = signedInUser.id
+
+        const dbBlog = await blogsHelpers.getBlogWithId(createdBlog.id)
+        console.log('seedBlog', seedData.newBlog)
+        console.log('dbBlog', dbBlog)
+
+        expect(dbBlog).toContainEntries(Object.entries(expected))
       }, 10000)
 
       test('the response has a blog with correct properties and values in its body', async () => {
@@ -286,7 +302,11 @@ describe('with seed data in database', () => {
         const response = await createBlog(signedInUser, seedData.newBlog)
         const createdBlog = response.body
 
-        expect(createdBlog).toContainEntries(Object.entries(seedData.newBlog))
+        let expected = { ...seedData.newBlog }
+        expected.user = signedInUser.id
+        expected.user = signedInUser.id
+
+        expect(createdBlog).toContainEntries(Object.entries(expected))
         expect(mongoose.isValidObjectId(createdBlog.id)).toBe(true)
       }, 10000)
 
@@ -360,11 +380,11 @@ describe('with seed data in database', () => {
         expect(blogsAfter.length).toBe(blogsBefore.length - 1)
       }, 10000)
 
-      test('get 204 status code when deleteing a nonexistant note', async () => {
+      test('get 204 status code when deleteing a nonexistant blog', async () => {
         const testUser = seedData.getTestUser()
         const signedInUser = await signInUser(testUser)
         const blogId = blogsHelpers.getBlogIdNotInDb()
-        console.log(blogId)
+
         await deleteBlog(signedInUser, blogId).expect(204)
       })
 
@@ -483,8 +503,6 @@ describe('with seed data in database', () => {
 
         const expected = { ...blogToUpdate, ...likesData }
 
-        console.log(expected)
-
         let dbBlog = await blogsHelpers.getBlogWithId(blogId)
         expect(dbBlog).toEqual(expected)
       }, 10000)
@@ -541,8 +559,6 @@ describe('with seed data in database', () => {
           .expect(404)
           .expect('Content-Type', /application\/json/)
 
-        console.log(response.body)
-
         expect(response.body).toEqual({ error: 'resource not found' })
       })
 
@@ -562,8 +578,6 @@ describe('with seed data in database', () => {
         )
           .expect(400)
           .expect('Content-Type', /application\/json/)
-
-        console.log(updateBlog.body)
       }, 10000)
 
       test('invalid id returns 400 status code and an appropriate error message', async () => {
@@ -574,8 +588,6 @@ describe('with seed data in database', () => {
         const response = await updateBlog({ likes: 1000 }, userId, signedInUser)
           .expect(400)
           .expect('Content-Type', /application\/json/)
-
-        console.log(updateBlog.body)
 
         expect(response.body.error).toBe('malformatted id')
       }, 10000)

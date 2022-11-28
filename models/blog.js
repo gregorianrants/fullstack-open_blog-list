@@ -37,9 +37,15 @@ async function create({ blogData, userDoc }) {
   })
 
   const savedBlog = await blogDoc.save()
-  await User.findByIdAndUpdate(userId, {
-    blogs: [...userDoc.blogs, savedBlog._id],
-  })
+
+  const savedUser = await User.Model.findByIdAndUpdate(
+    userId,
+    //blogs: [...userDoc.blogs, savedBlog._id],
+    { $push: { blogs: savedBlog._id } }
+  )
+
+  // userDoc.blogs = userDoc.blogs.concat(savedBlog._id)
+  // await userDoc.save()
 
   return savedBlog
 }

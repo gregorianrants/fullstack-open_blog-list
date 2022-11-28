@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "NODE_ENV=test jest --verbose --runInBand --forceExit",
+    "test-run-with-node": "node node_modules/.bin/jest  --verbose --runInBand --forceExit -- ./tests/helpers/users.test.js",
     "dev": "NODE_ENV=dev nodemon index.js",
     "lint": "eslint .",
-    "scratch": "NODE_ENV=test node --trace-warnings ./tests/api_helpers.scratch.js",
+    "scratch": "NODE_ENV=test node --trace-warnings scratch.js",
     "scratch-users": "NODE_ENV=test node --trace-warnings ./tests/users_helpers.scratch.js"
   },
   "jest": {
@@ -33,6 +34,7 @@
   "devDependencies": {
     "jest-extended": "^3.1.0",
     "nodemon": "^2.0.20",
+    "normalizr": "^3.6.2",
     "prettier": "^2.7.1",
     "superagent": "^8.0.3",
     "supertest": "^6.3.1"

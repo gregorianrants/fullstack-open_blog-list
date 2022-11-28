@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken')
 loginRouter.post('/', async (req, res) => {
   const { username, password } = req.body
   //look up users
-  const user = await User.findOne({ username })
+  const user = await User.Model.findOne({ username })
 
   const match = user ? await bcrypt.compare(password, user.password) : false
 
@@ -18,13 +18,12 @@ loginRouter.post('/', async (req, res) => {
     username,
     id: user._id,
   }
+  
   const token = await jwt.sign(userDetails, process.env.SECRET)
 
   //send web token to client
 
-  res
-    .status(200)
-    .send({ token, username: user.username, name: user.name, id: user._id })
+  res.status(200).send({ token, username: user.username, name: user.name })
 })
 
 module.exports = loginRouter

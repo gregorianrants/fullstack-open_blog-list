@@ -6,10 +6,12 @@ const userSchema = mongoose.Schema({
   username: String,
   password: String,
   name: String,
-  blogs: [{
-    type: mongoose.Schema.ObjectId,
-    ref: 'Blog'
-  }]
+  blogs: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Blog',
+    },
+  ],
 })
 
 userSchema.set('toJSON', {
@@ -18,12 +20,12 @@ userSchema.set('toJSON', {
     delete returned._id
     delete returned.__v
     delete returned.password
-  }
+  },
 })
 
-userSchema.pre('validate', async function() {
+userSchema.pre('validate', async function () {
   const user = await this.constructor.find({
-    username: this.username
+    username: this.username,
   })
   if (this.username.length <= 3) {
     this.invalidate(
@@ -37,7 +39,7 @@ userSchema.pre('validate', async function() {
   }
 })
 
-userSchema.pre('validate', async function() {
+userSchema.pre('validate', async function () {
   if (this.password.length <= 3) {
     this.invalidate(
       'password',
@@ -47,13 +49,28 @@ userSchema.pre('validate', async function() {
   }
 })
 
-userSchema.pre('save', async function() {
+userSchema.pre('save', async function () {
   const saltRounds = 10
   const hash = await bcrypt.hash(this.password, saltRounds)
 
   this.password = hash
 })
 
+function populate(query) {
+  return query.populate('blogs', {
+    title: 1,
+    author: 1,
+    url: 1,
+    likes: 1,
+  })
+}
+
+async function list() {
+  //const users = await populate(User.find({}))
+  const users = await populate(User.find({}))
+  return users
+}
+
 const User = mongoose.model('User', userSchema)
 
-module.exports = User
+module.exports = { Model: User, list, populate }
