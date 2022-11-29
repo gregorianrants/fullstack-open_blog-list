@@ -1,5 +1,4 @@
 const blogsRouter = require('express').Router()
-const { response } = require('express')
 const Blog = require('../models/blog.js')
 
 //NOTE BADLY the get blogs route populates the blogs the others dont!

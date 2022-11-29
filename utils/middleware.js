@@ -35,12 +35,14 @@ const errorHandler = (error, request, response, next) => {
     return response.status(error.statusCode).json({ error: error.message })
   } else if (error.name === 'JsonWebTokenError') {
     return response.status(401).json({ error: 'invalid json web token' })
+  } else if (error.name === 'TokenExpiredError') {
+    return response.status(401).json({
+      error: 'token expired',
+    })
   }
 
   next(error)
 }
-
-
 
 const getBearerToken = (request) => {
   const authorization = request.get('authorization')
@@ -69,5 +71,5 @@ module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
-  userExtractor
+  userExtractor,
 }

@@ -257,8 +257,8 @@ describe('with seed data in database', () => {
           .send(blog)
       }
 
-      test('blog fails with the proper status code 401 Unauthorized if a token is not provided.',()=>{
-        expect(true).toBe(false)
+      test('blog fails with the proper status code 401 Unauthorized if a token is not provided.', () => {
+        return api.post('/api/blogs').send(seedData.newBlog).expect(401)
       })
 
       test('response has 201 status code and correct content-type header', async () => {

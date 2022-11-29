@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const { doc } = require('prettier')
 const bcrypt = require('bcrypt')
 
 const userSchema = mongoose.Schema({
