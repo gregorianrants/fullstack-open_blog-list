@@ -8,14 +8,14 @@ const {
   toContainAllKeys,
 } = require('jest-extended')
 expect.extend({ toIncludeSameMembers, toContainEntries, toContainAllKeys })
-const { prettyPrint } = require('../../library/library.js')
+
 const { cloneDeep } = require('lodash')
 
 superTest(app)
 
 const { removePath } = require('../../library/library')
 const seedData = require('./seedData.js')
-const { check } = require('prettier')
+
 
 describe('with seed data in database', () => {
   beforeEach(async () => {

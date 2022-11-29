@@ -6,7 +6,7 @@ const {
   toIncludeAllMembers,
   toIncludeAllPartialMembers,
 } = require('jest-extended')
-const { get } = require('lodash')
+
 expect.extend({
   toContainAllKeys,
   toSatisfyAll,

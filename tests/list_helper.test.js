@@ -6,9 +6,6 @@ const {
   mostLikes,
 } = require('../utils/list_helper')
 
-
-
-
 test('dummy returns one', () => {
   const blogs = []
 
@@ -348,8 +345,6 @@ describe('mostBlogs', () => {
 
     const result = mostBlogs(blogs)
 
-   
-
     expect([
       {
         author: 'Edsger W. Dijkstra',
@@ -483,7 +478,6 @@ describe('mostLikes', () => {
     ]
 
     const result = mostLikes(blogs)
-
 
     expect([
       {
