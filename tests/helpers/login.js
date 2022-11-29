@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 
 function configureSignInUser(api) {
   return async (user) => {
-    const { username, name, password } = user
+    const { username, password } = user
     const response = await api.post('/api/login').send({ username, password })
 
     if (response.status === 200) {

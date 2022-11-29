@@ -5,17 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "NODE_ENV=test jest --verbose --runInBand --forceExit",
-    "test-run-with-node": "node node_modules/.bin/jest  --verbose --runInBand --forceExit -- ./tests/helpers/users.test.js",
     "dev": "NODE_ENV=dev nodemon index.js",
-    "lint": "eslint .",
-    "scratch": "NODE_ENV=test node --trace-warnings scratch.js",
-    "scratch-users": "NODE_ENV=test node --trace-warnings ./tests/users_helpers.scratch.js"
+    "lint": "eslint ."
   },
   "jest": {
-    "testEnvironment": "node",
-    "setupFilesAfterEnv": [
-      "./testSetup.js"
-    ]
+    "testEnvironment": "node"
   },
   "author": "",
   "license": "ISC",

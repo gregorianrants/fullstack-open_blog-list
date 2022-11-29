@@ -5,11 +5,9 @@ const {
   mostBlogs,
   mostLikes,
 } = require('../utils/list_helper')
-const isEqualToOneOff = require('../test_extensions/isEqualtoOneOff.js')
 
-expect.extend({
-  isEqualToOneOff,
-})
+
+
 
 test('dummy returns one', () => {
   const blogs = []
@@ -205,7 +203,7 @@ describe('favouriteBlog', () => {
 
     const result = favouriteBlog(blogs)
 
-    expect(result).isEqualToOneOff([
+    expect([
       {
         _id: '5a422aa71b54a676234d17f8',
         title: 'Go To Statement Considered Harmful',
@@ -222,7 +220,7 @@ describe('favouriteBlog', () => {
         likes: 3,
         __v: 0,
       },
-    ])
+    ]).toContainEqual(result)
   })
 
   test('single blog', () => {
@@ -350,7 +348,9 @@ describe('mostBlogs', () => {
 
     const result = mostBlogs(blogs)
 
-    expect(result).isEqualToOneOff([
+   
+
+    expect([
       {
         author: 'Edsger W. Dijkstra',
         blogs: 2,
@@ -359,7 +359,7 @@ describe('mostBlogs', () => {
         author: 'Robert C. Martin',
         blogs: 2,
       },
-    ])
+    ]).toContainEqual(result)
   })
 })
 
@@ -484,7 +484,8 @@ describe('mostLikes', () => {
 
     const result = mostLikes(blogs)
 
-    expect(result).isEqualToOneOff([
+
+    expect([
       {
         author: 'Robert C. Martin',
         likes: 12,
@@ -493,6 +494,6 @@ describe('mostLikes', () => {
         author: 'Edsger W. Dijkstra',
         likes: 12,
       },
-    ])
+    ]).toContainEqual(result)
   })
 })

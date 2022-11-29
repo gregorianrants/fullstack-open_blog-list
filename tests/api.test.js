@@ -290,8 +290,6 @@ describe('with seed data in database', () => {
         expected.user = signedInUser.id
 
         const dbBlog = await blogsHelpers.getBlogWithId(createdBlog.id)
-        console.log('seedBlog', seedData.newBlog)
-        console.log('dbBlog', dbBlog)
 
         expect(dbBlog).toContainEntries(Object.entries(expected))
       }, 10000)
